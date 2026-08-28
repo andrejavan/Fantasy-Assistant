@@ -1,5 +1,5 @@
 async function loadBaseData() {
-  const response = await fetch("./fantasy_vorp_draft_board_2026_v8.data.json");
+  const response = await fetch("./fantasy_vorp_draft_board_2026_data.json");
   if (!response.ok) {
     throw new Error(`Could not load player data (${response.status}).`);
   }
@@ -563,7 +563,7 @@ async function init() {
       url = URL.createObjectURL(blob),
       a = document.createElement("a");
     a.href = url;
-    a.download = "fantasy_vorp_v8_state.csv";
+    a.download = "fantasy_vorp_state.csv";
     a.click();
     URL.revokeObjectURL(url);
   }
