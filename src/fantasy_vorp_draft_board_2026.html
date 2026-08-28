@@ -1,0 +1,510 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fantasy VORP v8</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --p: #121a2e;
+        --p2: #18233d;
+        --t: #f4f7ff;
+        --m: #7f8da8;
+        --a: #75a7ff;
+        --g: #8ce99a;
+        --y: #ffd43b;
+        --r: #ff8787;
+        --l: #2a3859;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--t);
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+      }
+
+      header {
+        padding: 14px 22px 10px;
+        border-bottom: 1px solid var(--l);
+        position: relative;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .sub,
+      .small {
+        color: var(--m);
+        font-size: 11px;
+      }
+
+      .data {
+        position: absolute;
+        right: 18px;
+        top: 14px;
+        z-index: 20;
+      }
+
+      .data summary {
+        cursor: pointer;
+        padding: 7px 11px;
+        background: var(--p2);
+        border: 1px solid var(--l);
+        border-radius: 8px;
+      }
+
+      .menu {
+        position: absolute;
+        right: 0;
+        top: 38px;
+        width: 190px;
+        background: var(--p);
+        border: 1px solid var(--l);
+        padding: 7px;
+        border-radius: 9px;
+      }
+
+      .menu button,
+      .menu label {
+        display: block;
+        width: 100%;
+        margin: 4px 0;
+        padding: 7px;
+        border-radius: 7px;
+        border: 1px solid var(--l);
+        background: var(--p2);
+        color: var(--t);
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .tickerW {
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--l);
+        background: #0e1628;
+      }
+
+      .ticker {
+        display: inline-block;
+        padding: 8px 0;
+        animation: scroll 55s linear infinite;
+      }
+
+      .ticker:hover {
+        animation-play-state: paused;
+      }
+
+      @keyframes scroll {
+        from {
+          transform: translateX(100vw);
+        }
+
+        to {
+          transform: translateX(-100%);
+        }
+      }
+
+      .tick {
+        display: inline-block;
+        margin-right: 32px;
+      }
+
+      .good {
+        color: var(--g);
+        font-weight: 700;
+      }
+
+      .wrap {
+        max-width: 1780px;
+        margin: auto;
+        padding: 14px;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+        gap: 8px;
+        background: var(--p);
+        padding: 10px;
+        border: 1px solid var(--l);
+        border-radius: 11px;
+      }
+
+      label {
+        font-size: 11px;
+        color: var(--m);
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--l);
+        background: var(--p2);
+        color: var(--t);
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .status {
+        padding: 8px 11px;
+        margin-top: 8px;
+        background: #172642;
+        border-radius: 8px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin: 11px 0;
+      }
+
+      .tabs button {
+        width: auto;
+      }
+
+      .active {
+        outline: 2px solid var(--a);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2.5fr) minmax(390px, 0.9fr);
+        gap: 13px;
+      }
+
+      @media (max-width: 1100px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--p);
+        border: 1px solid var(--l);
+        border-radius: 11px;
+        overflow: hidden;
+      }
+
+      .card h2 {
+        font-size: 15px;
+        margin: 0;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--l);
+      }
+
+      .tw {
+        overflow: auto;
+        max-height: 73vh;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 7px;
+        border-bottom: 1px solid #24314e;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background: #111a2d;
+        color: var(--m);
+        z-index: 3;
+      }
+
+      tr:hover {
+        background: #192643;
+      }
+
+      .side {
+        padding: 11px 13px;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--l);
+      }
+
+      .lineup td {
+        text-align: left;
+      }
+
+      .lineup td:last-child {
+        text-align: right;
+      }
+
+      .actual {
+        color: var(--t);
+        font-weight: 700;
+      }
+
+      .preview {
+        color: var(--m);
+        font-style: italic;
+      }
+
+      .tag {
+        display: inline-block;
+        font-size: 9px;
+        padding: 3px 5px;
+        border-radius: 999px;
+        margin-left: 4px;
+        font-weight: 800;
+      }
+
+      .boom {
+        color: #bdf8c6;
+        background: #173523;
+      }
+
+      .risk {
+        color: #ffe99a;
+        background: #3b3213;
+      }
+
+      .price {
+        color: #ffc1c1;
+        background: #411b22;
+      }
+
+      .rowBoom {
+        box-shadow: inset 4px 0 #4caf69;
+      }
+
+      .rowRisk {
+        box-shadow: inset 4px 0 #d5a928;
+      }
+
+      .rowPrice {
+        box-shadow: inset 4px 0 #dc5968;
+      }
+
+      .comp {
+        text-align: left !important;
+        min-width: 200px;
+      }
+
+      .path {
+        display: block;
+        color: var(--m);
+        font-size: 10px;
+        max-width: 280px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .best {
+        background: #11251b;
+      }
+
+      .ctx {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        width: 190px;
+        background: var(--p);
+        border: 1px solid var(--l);
+        border-radius: 9px;
+        padding: 6px;
+        box-shadow: 0 12px 32px #000a;
+      }
+
+      .ctx button {
+        margin: 3px 0;
+        text-align: left;
+      }
+
+      .log {
+        max-height: 180px;
+        overflow: auto;
+      }
+
+      .log div {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #24314e;
+      }
+
+      .legend {
+        margin-top: 7px;
+      }
+
+      .legend .tag {
+        margin-right: 4px;
+      }
+
+      #csv {
+        display: none;
+      }
+
+      .dp {
+        margin-top: 8px;
+        padding: 8px;
+        background: #101b30;
+        border: 1px solid var(--l);
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>2026 Fantasy VORP Draft Board — v8</h1>
+      <div class="sub">
+        Dynamic-programming core completion • turn-aware DD • editable player
+        context • CSV save state
+      </div>
+      <details class="data">
+        <summary>Data</summary>
+        <div class="menu">
+          <button id="exp">Export CSV state</button
+          ><label for="csv">Import CSV state</label
+          ><input id="csv" type="file" accept=".csv" /><button id="base">
+            Reset baseline
+          </button>
+        </div>
+      </details>
+      <div class="legend">
+        <span class="tag boom">BOOM</span
+        ><span class="tag risk">INJ / UNCERTAIN</span
+        ><span class="tag price">PRICE RISK</span
+        ><span class="small"
+          >Right-click a player to edit PPG, ADP, tags, or notes.</span
+        >
+      </div>
+    </header>
+    <div class="tickerW">
+      <div class="ticker" id="ticker"></div>
+    </div>
+    <div class="wrap">
+      <div class="controls">
+        <div>
+          <label>League size</label
+          ><input id="n" type="number" min="4" max="20" value="10" />
+        </div>
+        <div>
+          <label>Your slot</label
+          ><input id="slot" type="number" min="1" max="10" value="1" />
+        </div>
+        <div>
+          <label>Opponent strategy</label
+          ><select id="opp">
+            <option value="adp">ADP-first</option>
+            <option value="dd">DD-first</option>
+          </select>
+        </div>
+        <div>
+          <label>Current pick</label
+          ><input id="pick" type="number" min="1" value="1" />
+        </div>
+        <div><label>Search</label><input id="q" /></div>
+        <div>
+          <label>Mock</label><button id="auto">Auto-draft to me</button>
+        </div>
+        <div><label>Undo</label><button id="undo">Undo</button></div>
+        <div><label>Reset</label><button id="reset">Reset mock</button></div>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="tabs" id="tabs"></div>
+      <div class="grid">
+        <div class="card">
+          <h2 id="title"></h2>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player</th>
+                  <th>PPG</th>
+                  <th>VORP</th>
+                  <th>VON</th>
+                  <th>Tier</th>
+                  <th>ADP</th>
+                  <th>DD1</th>
+                  <th>DD2</th>
+                  <th>DD3</th>
+                  <th class="comp">Completion Score</th>
+                  <th>Pick</th>
+                </tr>
+              </thead>
+              <tbody id="body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h2>League / lineup</h2>
+          <div class="side">
+            <div class="metric">
+              <span>View team</span
+              ><select id="team"></select>
+            </div>
+            <div class="metric">
+              <span>Starting PPG</span><b id="sppg">0</b>
+            </div>
+            <div class="metric">
+              <span>All drafted PPG</span><b id="appg">0</b>
+            </div>
+            <table class="lineup">
+              <tbody id="line"></tbody>
+            </table>
+            <div class="metric"><span>On clock</span><b id="clock"></b></div>
+            <div class="metric"><span>DD turns</span><b id="turns"></b></div>
+            <div class="metric"><span>Drafted</span><b id="count">0</b></div>
+            <div class="dp small">
+              <b>Completion Score:</b> Draft the row player now, then fill the
+              remaining positions optimally. Future player
+              availability is estimated by ADP. Repeated subproblems are
+              memoized by horizon + roster-needs + already-selected future
+              players. Adjacent snake picks are included in this search even
+              though DD collapses them into one turn.
+            </div>
+            <h3>Recent picks</h3>
+            <div class="log" id="log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ctx" id="ctx">
+      <button data-a="ppg">Edit PPG…</button
+      ><button data-a="adp">Edit ADP…</button
+      ><button data-a="tags">Edit tags…</button
+      ><button data-a="note">Edit note…</button
+      ><button data-a="restore">Reset player</button>
+    </div>
+    <script src="./fantasy_vorp_draft_board_2026_v8.js" defer></script>
+  </body>
+</html>
